@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ -z "${TOKONIX_HOME:-}" ]]; then
+  TOKONIX_HOME="$HOME/.tokonix"
+fi
+export TOKONIX_HOME
+export CODEX_HOME="$TOKONIX_HOME"
+mkdir -p "$TOKONIX_HOME"
+
+if [[ -n "${TOKONIX_BIN:-}" ]]; then
+  exec "$TOKONIX_BIN" "$@"
+fi
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ "$SOURCE" != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+
+SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+LOCAL_DEBUG="$REPO_ROOT/codex-rs/target/debug/codex"
+LOCAL_RELEASE="$REPO_ROOT/codex-rs/target/release/codex"
+
+if [[ -x "$LOCAL_DEBUG" ]]; then
+  exec "$LOCAL_DEBUG" "$@"
+fi
+if [[ -x "$LOCAL_RELEASE" ]]; then
+  exec "$LOCAL_RELEASE" "$@"
+fi
+
+if [[ "${1:-}" == "overlay" || "${1:-}" == "voice-overlay" ]]; then
+  shift
+  app_path=""
+  build_app=false
+  repo_root="$REPO_ROOT"
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --app)
+        if [[ $# -lt 2 ]]; then
+          echo "tokonix overlay: --app requires a value" >&2
+          exit 2
+        fi
+        app_path="$2"
+        shift 2
+        ;;
+      --app=*)
+        app_path="${1#*=}"
+        shift
+        ;;
+      --build)
+        build_app=true
+        shift
+        ;;
+      --repo-root)
+        if [[ $# -lt 2 ]]; then
+          echo "tokonix overlay: --repo-root requires a value" >&2
+          exit 2
+        fi
+        repo_root="$2"
+        shift 2
+        ;;
+      --repo-root=*)
+        repo_root="${1#*=}"
+        shift
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+
+  if [[ -z "$app_path" && -n "${TOKONIX_OVERLAY_APP:-}" ]]; then
+    app_path="$TOKONIX_OVERLAY_APP"
+  fi
+
+  if [[ "$build_app" == true ]]; then
+    build_script="$repo_root/macos-tokonix/build_app.sh"
+    if [[ -x "$build_script" ]]; then
+      (cd "$repo_root/macos-tokonix" && "$build_script")
+    else
+      echo "tokonix overlay: expected build script at $build_script" >&2
+      exit 1
+    fi
+  fi
+
+  if [[ -z "$app_path" ]]; then
+    for candidate in \
+      "$repo_root/macos-tokonix/dist/Tokonix.app" \
+      "/Applications/Tokonix.app" \
+      "$HOME/Applications/Tokonix.app"
+    do
+      if [[ -d "$candidate" ]]; then
+        app_path="$candidate"
+        break
+      fi
+    done
+  fi
+
+  if [[ -z "$app_path" ]]; then
+    echo "tokonix overlay: unable to locate Tokonix.app. Set TOKONIX_OVERLAY_APP or pass --app PATH." >&2
+    exit 1
+  fi
+
+  if command -v open >/dev/null 2>&1; then
+    open "$app_path"
+    exit 0
+  fi
+
+  echo "tokonix overlay: 'open' command not available on this system." >&2
+  exit 1
+fi
+
+if command -v codex >/dev/null 2>&1; then
+  exec codex "$@"
+fi
+
+echo "tokonix: unable to find codex binary. Build it with 'cargo build -p codex-cli' in $REPO_ROOT/codex-rs or install codex." >&2
+exit 1

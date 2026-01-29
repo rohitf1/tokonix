@@ -1,0 +1,12 @@
+# Quick Notes
+
+Use this space for text you want to read or copy. Update freely.
+
+## Highlights
+- Keep notes short and skimmable.
+- Use headings to separate sections.
+- Copy/paste directly from this window.
+
+## Example
+- Key metrics: 42, 76%, 3.2s
+- Next step: review the diagram and summarize findings.

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Artifact Game</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&display=swap" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: #05060b;
+        overflow: hidden;
+        font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      }
+
+      #game-root {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- artifact-error-overlay -->
+    <script>
+      (function () {
+        if (window.__artifactErrorOverlay) return;
+        window.__artifactErrorOverlay = true;
+
+        function showOverlay(title, message) {
+          var root = document.getElementById("game-root") || document.body;
+          var overlay = document.createElement("div");
+          overlay.style.position = "absolute";
+          overlay.style.inset = "0";
+          overlay.style.background = "rgba(5, 6, 11, 0.95)";
+          overlay.style.color = "#e6f3ff";
+          overlay.style.fontFamily = "\"Space Grotesk\", \"Segoe UI\", sans-serif";
+          overlay.style.padding = "32px";
+          overlay.style.zIndex = "9999";
+          overlay.style.overflow = "auto";
+
+          var heading = document.createElement("div");
+          heading.textContent = title;
+          heading.style.fontSize = "20px";
+          heading.style.marginBottom = "12px";
+          overlay.appendChild(heading);
+
+          var pre = document.createElement("pre");
+          pre.textContent = message || "Unknown error";
+          pre.style.whiteSpace = "pre-wrap";
+          pre.style.fontSize = "13px";
+          pre.style.opacity = "0.85";
+          overlay.appendChild(pre);
+
+          root.appendChild(overlay);
+        }
+
+        window.addEventListener("error", function (event) {
+          var message = event && (event.message || (event.error && event.error.stack) || event.error);
+          showOverlay("Renderer error", String(message || event));
+        });
+
+        window.addEventListener("unhandledrejection", function (event) {
+          var reason = event && event.reason;
+          var message = reason && (reason.stack || reason.message || reason);
+          showOverlay("Unhandled rejection", String(message || reason || event));
+        });
+      })();
+    </script>
+    <div id="game-root"></div>
+    <script src="./node_modules/phaser/dist/phaser.js"></script>
+    <script type="module" src="./game.js"></script>
+  </body>
+</html>

@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ title | default('AI Report') }}</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #05060b;
+        --panel: rgba(12, 16, 28, 0.75);
+        --panel-soft: rgba(20, 24, 40, 0.55);
+        --accent: #4cc3ff;
+        --accent-2: #b44bff;
+        --accent-3: #ff4fd8;
+        --text: #e6f3ff;
+        --muted: rgba(230, 243, 255, 0.65);
+        --border: rgba(76, 195, 255, 0.25);
+        --shadow: 0 20px 60px rgba(6, 10, 24, 0.45);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top, rgba(76, 195, 255, 0.18), transparent 45%),
+          radial-gradient(circle at 20% 30%, rgba(180, 75, 255, 0.12), transparent 50%),
+          radial-gradient(circle at 80% 70%, rgba(255, 79, 216, 0.12), transparent 50%),
+          var(--bg);
+        color: var(--text);
+        font-family: "SF Pro Text", "Segoe UI", sans-serif;
+        line-height: 1.5;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .ambient-field {
+        position: fixed;
+        inset: -20%;
+        background:
+          radial-gradient(circle at 20% 20%, rgba(76, 195, 255, 0.28), transparent 45%),
+          radial-gradient(circle at 80% 25%, rgba(180, 75, 255, 0.25), transparent 48%),
+          radial-gradient(circle at 50% 80%, rgba(255, 79, 216, 0.2), transparent 52%);
+        filter: blur(30px);
+        opacity: 0.7;
+        animation: aurora-drift 18s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .report-shell {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 40px 28px 64px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .report-header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .title-block h1 {
+        margin: 0 0 8px;
+        font-size: 34px;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      .summary {
+        padding: 24px;
+        background: var(--panel);
+        border-radius: 22px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .summary::after {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background: conic-gradient(from 180deg, rgba(76, 195, 255, 0.05), rgba(255, 79, 216, 0.2), rgba(180, 75, 255, 0.12), rgba(76, 195, 255, 0.05));
+        animation: halo-spin 16s linear infinite;
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .summary-text {
+        margin: 0 0 18px;
+        color: var(--muted);
+        font-size: 16px;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+      }
+
+      .metric-card {
+        background: var(--panel-soft);
+        border-radius: 16px;
+        padding: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .metric-label {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .metric-value {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 8px 0 4px;
+      }
+
+      .metric-delta {
+        font-size: 13px;
+        color: var(--accent);
+      }
+
+      .charts {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 18px;
+      }
+
+      .tables {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 18px;
+      }
+
+      .table-card {
+        background: var(--panel);
+        border-radius: 20px;
+        padding: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .table-card h3 {
+        margin: 0 0 12px;
+        font-size: 16px;
+      }
+
+      .chart-card {
+        background: var(--panel);
+        border-radius: 20px;
+        padding: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .chart-card h3 {
+        margin: 0 0 12px;
+        font-size: 16px;
+      }
+
+      .chart-image {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .table {
+        background: var(--panel);
+        border-radius: 20px;
+        padding: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .table table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      .table th,
+      .table td {
+        text-align: left;
+        padding: 10px 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .table th {
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .notes {
+        background: linear-gradient(120deg, rgba(76, 195, 255, 0.18), rgba(255, 79, 216, 0.12));
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .notes h3 {
+        margin: 0 0 12px;
+        font-size: 16px;
+      }
+
+      .notes ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--muted);
+      }
+
+      @keyframes aurora-drift {
+        0% {
+          transform: translate3d(-2%, -2%, 0) scale(1);
+        }
+        50% {
+          transform: translate3d(2%, 3%, 0) scale(1.05);
+        }
+        100% {
+          transform: translate3d(-2%, -2%, 0) scale(1);
+        }
+      }
+
+      @keyframes halo-spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ambient-field"></div>
+    <div class="report-shell">
+      <header class="report-header">
+        <div class="title-block">
+          <h1>{{ title | default('AI Report') }}</h1>
+          <p class="subtitle">{{ subtitle | default('') }}</p>
+        </div>
+      </header>
+
+      <section class="summary">
+        <p class="summary-text">{{ summary | default('') }}</p>
+        <div class="metrics">
+          {% for metric in metrics %}
+          <div class="metric-card">
+            <div class="metric-label">{{ metric.label }}</div>
+            <div class="metric-value">{{ metric.value }}</div>
+            <div class="metric-delta">{{ metric.delta }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="charts">
+        {% for chart in charts %}
+        <div class="chart-card">
+          <h3>{{ chart.title }}</h3>
+          {% if chart.image %}
+            <img class="chart-image" src="data:image/png;base64,{{ chart.image }}" alt="{{ chart.title }}" />
+          {% endif %}
+        </div>
+        {% endfor %}
+      </section>
+
+      {% if tables %}
+      <section class="tables">
+        {% for table in tables %}
+        <div class="table-card">
+          <h3>{{ table.title }}</h3>
+          <table>
+            <thead>
+              <tr>
+                {% for column in table.columns %}
+                <th>{{ column }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in table.rows %}
+              <tr>
+                {% for cell in row %}
+                <td>{{ cell }}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endfor %}
+      </section>
+      {% elif table %}
+      <section class="table">
+        <h3>{{ table.title }}</h3>
+        <table>
+          <thead>
+            <tr>
+              {% for column in table.columns %}
+              <th>{{ column }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in table.rows %}
+            <tr>
+              {% for cell in row %}
+              <td>{{ cell }}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+      {% endif %}
+
+      {% if notes %}
+      <section class="notes">
+        <h3>{{ notes_title | default('Highlights') }}</h3>
+        <ul>
+          {% for note in notes %}
+          <li>{{ note }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+    </div>
+  </body>
+</html>

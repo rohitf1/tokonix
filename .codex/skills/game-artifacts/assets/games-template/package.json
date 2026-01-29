@@ -1,0 +1,16 @@
+{
+  "name": "artifact-game",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron ."
+  },
+  "dependencies": {
+    "phaser": "^3.80.1"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0"
+  }
+}

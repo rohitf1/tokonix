@@ -1,0 +1,60 @@
+:root {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.video-root {
+  background: radial-gradient(circle at top, #172235 0%, #0c0f15 55%, #07080b 100%);
+  color: #f7f8fb;
+  position: relative;
+}
+
+.glow {
+  position: absolute;
+  width: 900px;
+  height: 900px;
+  border-radius: 999px;
+  top: -320px;
+  right: -280px;
+  background: radial-gradient(circle, rgba(74, 179, 255, 0.6), rgba(74, 179, 255, 0));
+  filter: blur(6px);
+}
+
+.content {
+  position: absolute;
+  left: 90px;
+  top: 160px;
+  max-width: 720px;
+}
+
+.eyebrow {
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-size: 14px;
+  color: rgba(180, 215, 255, 0.8);
+  margin-bottom: 12px;
+}
+
+h1 {
+  font-size: 64px;
+  margin: 0 0 16px;
+}
+
+p {
+  font-size: 22px;
+  line-height: 1.4;
+  margin: 0 0 24px;
+  color: rgba(220, 230, 244, 0.9);
+}
+
+.chips {
+  display: flex;
+  gap: 12px;
+}
+
+.chips span {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(90, 150, 255, 0.18);
+  border: 1px solid rgba(120, 200, 255, 0.4);
+  font-size: 14px;
+}

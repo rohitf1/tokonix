@@ -1,0 +1,43 @@
+{
+  "title": "AI Insights Report",
+  "subtitle": "Week of 2025-02-10",
+  "summary": "Engagement held steady while latency improved across the top three workflows. The largest lift came from onboarding copy changes.",
+  "metrics": [
+    { "label": "Active users", "value": "12,340", "delta": "+4.2%" },
+    { "label": "Avg. response", "value": "1.9s", "delta": "-12%" },
+    { "label": "Conversion", "value": "7.8%", "delta": "+0.6%" }
+  ],
+  "charts": [
+    {
+      "title": "Sessions",
+      "type": "line",
+      "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "series": [
+        { "label": "Sessions", "data": [820, 900, 960, 870, 1020, 1100, 990] }
+      ]
+    },
+    {
+      "title": "Latency (p95)",
+      "type": "bar",
+      "labels": ["Chat", "Report", "Search", "Summaries"],
+      "series": [
+        { "label": "p95 (ms)", "data": [720, 610, 540, 580] }
+      ]
+    }
+  ],
+  "table": {
+    "title": "Top tasks",
+    "columns": ["Task", "Requests", "Change"],
+    "rows": [
+      ["Summaries", "3,240", "+8%"],
+      ["Quick answers", "2,410", "+5%"],
+      ["Search", "1,980", "+2%"],
+      ["Drafting", "1,210", "-1%"]
+    ]
+  },
+  "notes": [
+    "Onboarding completion improved after CTA updates.",
+    "Most latency wins came from cache hits on summaries.",
+    "Drafting dipped; review the new prompt defaults."
+  ]
+}

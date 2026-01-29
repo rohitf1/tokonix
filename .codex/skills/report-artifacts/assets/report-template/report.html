@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ title | default('AI Report') }}</title>
+    <link rel="stylesheet" href="report.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="ambient-field"></div>
+    <div class="report-shell">
+      <header class="report-header">
+        <div class="title-block">
+          <h1>{{ title | default('AI Report') }}</h1>
+          <p class="subtitle">{{ subtitle | default('') }}</p>
+        </div>
+        <div class="report-actions">
+          <button id="print-btn" type="button">Print</button>
+          <button id="copy-btn" type="button">Copy summary</button>
+        </div>
+      </header>
+
+      <section class="summary">
+        <p class="summary-text">{{ summary | default('') }}</p>
+        <div class="metrics" id="metrics"></div>
+      </section>
+
+      <section class="charts" id="charts"></section>
+
+      <section class="tables" id="tables"></section>
+      <section class="table" id="table"></section>
+
+      <section class="notes" id="notes"></section>
+    </div>
+
+    <script id="report-data" type="application/json">
+{{ report_json | safe }}
+    </script>
+    <script src="report.js"></script>
+  </body>
+</html>

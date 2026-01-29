@@ -1,0 +1,1 @@
+export TOKONIX_OVERLAY_DEBUG_LOG=/tmp/tokonix_overlay_debug.log
